@@ -83,12 +83,6 @@ def user_exists(username):
     wb.close()
     return False
 
-# def show_register_page():
-#     if 'login_frame' in globals() and 'register_frame' in globals():
-#         login_frame.grid_forget()
-#         register_frame.grid()
-#     else:
-#         messagebox.showerror("Error", "Frames are not initialized.")
 
     if not user or not pwd:
         messagebox.showwarning("Input Error", "Please fill in both fields.")
@@ -132,7 +126,6 @@ def register_user(username, password):
     wb.save(EXCEL_FILE)
     wb.close()
 
-# Initialize global variables
 current_user = None
 
 def login():
@@ -144,7 +137,7 @@ def login():
         messagebox.showwarning("Input Error", "Please fill in both fields.")
         return
 
-    # Validate login against the "RegisteredUsers" sheet
+   
     try:
         wb = load_workbook(EXCEL_FILE)
         if "RegisteredUsers" in wb.sheetnames:
@@ -214,7 +207,7 @@ def inventoryWindow():
                         messagebox.showwarning("Input Error", "Please fill in both fields.")
                         return
 
-                    # Check if the user exists in the "RegisteredUsers" worksheet
+                 
                     wb = load_workbook(EXCEL_FILE)
                     if "RegisteredUsers" not in wb.sheetnames:
                         userSheets = wb.create_sheet("RegisteredUsers")
@@ -229,7 +222,6 @@ def inventoryWindow():
                             messagebox.showerror("Error", "Username already exists.")
                             return True
 
-                    # Register the user in the "RegisteredUsers" worksheet
                     userSheets.append([user, pwd])
                     wb.save(EXCEL_FILE)
                     wb.close()
@@ -259,7 +251,7 @@ def inventoryWindow():
                         user_tree.heading(col, text=col)
                         user_tree.column(col, width=100)  # You can adjust width as needed
 
-                    # Insert the rest of the rows
+                    
                     for row in userSheets.iter_rows(min_row=2, values_only=True):
                         user_tree.insert("", "end", values=row)
 
@@ -278,7 +270,7 @@ def inventoryWindow():
                     Management.destroy()
                     root.deiconify()
                     
-                # Transparent buttons
+     
                 tk.Button(tab5, text="SUBMIT", command=register, font=("Arial", 12), bg="CadetBlue", fg="white", relief="groove").grid(row=1, column=3, pady=5,padx=15, sticky="we")
                
                 
@@ -599,10 +591,7 @@ def inventoryWindow():
 
 
 
-    # tk.Button(tab2, text="ADD", command=add_item, bg="DarkSlateGrey", fg="white", relief="groove", font="Arial 10").grid(row=1, column=2, pady=5, sticky="we")
-    # tk.Button(tab2, text="DELETE", command=delete_item, bg="DarkSlateGrey", fg="white", relief="groove", font="Arial 10").grid(row=4, column=2, pady=5, sticky="we")
-    # tk.Button(tab2, text="UPDATE", command=update_item, bg="DarkSlateGrey", fg="white", relief="groove", font="Arial 10").grid(row=5, column=2, pady=5, sticky="we")
-
+ 
     inventoryTree = ttk.Treeview(tab2, columns=("Item", "Quantity", "Price", "Date Added"), show="headings")
     style = ttk.Style()
     style.theme_use("clam")
@@ -662,30 +651,30 @@ def inventoryWindow():
             messagebox.showwarning("Negative quantity", "Quantity cannot be negative.")
             return
 
-        # Load workbook and sheets
+    
         wb = load_workbook("inventory.xlsx")
         inventory_sheet = wb["Inventory"]
         history_sheet = wb["History"]
 
-        # Update Inventory quantity
+
         for row in inventory_sheet.iter_rows(min_row=2):
             if row[0].value == item_name:
                 row[1].value = new_qty
                 break
 
-        # Get current time for the timeline
+   
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # Update "Date Added" (timeline) in merged cell E:F for this item
+
         for row in history_sheet.iter_rows(min_row=2):
-            # Column E is index 4
+
             cell = row[4]
             if cell.value == item_name:
                 # Write the timestamp in the merged E:F cell (only need to write to E)
                 cell.value = current_time
                 break
 
-        # Save changes
+      
         wb.save("inventory.xlsx")
 
         # Update Treeview with new quantity and timeline
@@ -702,7 +691,7 @@ def inventoryWindow():
         """Filters inventory based on search, updates Treeview, and calculates total quantity & value."""
         timestamp_lookup = defaultdict(lambda: "N/A")
 
-        # Load workbook and retrieve headers
+
         wb = load_workbook("inventory.xlsx")
         inventory_ws = wb["Inventory"]
         history_ws = wb["History"]
@@ -714,7 +703,7 @@ def inventoryWindow():
             print("Error: 'Timestamp' column not found.")
             return
 
-        # Populate timestamp lookup
+        
         for row in history_ws.iter_rows(min_row=2, values_only=True):
             if row[1] and row[timestamp_index]:
                 timestamp_lookup[str(row[1]).lower()] = str(row[timestamp_index])
@@ -724,7 +713,7 @@ def inventoryWindow():
 
         inventoryTree.delete(*inventoryTree.get_children())  # Clear Treeview
 
-        # Loop through inventory and search across ALL columns
+        
         for row in inventory_ws.iter_rows(min_row=2, values_only=True):
             try:
                 item, quantity, price = row[:3]
@@ -733,11 +722,10 @@ def inventoryWindow():
 
                 timestamp_str = timestamp_lookup.get(str(item).lower(), "N/A")
 
-                # Ensure numeric values are valid
+               
                 quantity = float(quantity) if isinstance(quantity, (int, float, str)) and str(quantity).replace(".", "").isdigit() else 0
                 price = float(price) if isinstance(price, (int, float, str)) and str(price).replace(".", "").isdigit() else 0
 
-                # Check query in **ALL COLUMNS** (Item, Quantity, Price, Timestamp)
                 row_values = [str(item).lower(), str(quantity), str(price), timestamp_str.lower()]
                 if any(query in str(value) for value in row_values):
                     inventoryTree.insert("", "end", values=(item, quantity, price, timestamp_str))
@@ -765,7 +753,7 @@ def inventoryWindow():
 
  
 
-    # Deduct Quantity UI
+    # Deduct Quantity 
     tk.Label(tab2, text="Deduct Quantity:", bg="gray10", font="Calibri 11", fg="white").grid(row=4, column=0, sticky="w")
     spinbox_deduction = tk.Spinbox(tab2, from_=0, to=1000, increment=1, font="Times 11", justify="left")
     spinbox_deduction.grid(row=4, column=1, sticky="we")
@@ -785,148 +773,17 @@ def inventoryWindow():
 
     tab2.grid_columnconfigure(1, weight=1)
 
-    # Run function initially to show total & populate Treeview
     process_inventory()
 
 
-    # def search(event):
-    #     timestamp_lookup = {}
-
-    #     # Reference the correct worksheet with capital 'H'
-    #     history_ws = wb["History"]
-
-    #     # Find the index of the 'Timestamp' column dynamically
-    #     header = [cell.value for cell in history_ws[1]]
-    #     timestamp_index = header.index("Timestamp") if "Timestamp" in header else None
-
-    #     if timestamp_index is None:
-    #         print("Error: 'Timestamp' column not found.")
-    #         return
-
-    #     # Populate lookup dictionary for timestamps
-    #     for row in history_ws.iter_rows(min_row=2, values_only=True):
-    #         try:
-    #             item = row[1]  
-    #             timestamp = row[timestamp_index]  # Retrieve Timestamp dynamically
-    #             if item and timestamp:
-    #                 timestamp_lookup[str(item).lower()] = str(timestamp)
-    #         except IndexError:
-    #             continue
-
-    #     print("Timestamp Lookup:", timestamp_lookup)  # Debug: Verify data retrieval
-
-    #     query = entry.get().lower()
-    #     inventoryTree.delete(*inventoryTree.get_children()) 
-
-    #     for col in ("Item", "Quantity", "Price", "Date Added"):
-    #         inventoryTree.heading(col, text=col)
-
-    #     total = 0  # Reset before loop
-    #     searched = bool(query)
-
-    #     for row in inventory_ws.iter_rows(min_row=2, values_only=True):
-    #         try:
-    #             item, quantity, price = row[:3]  
-    #             if not item:
-    #                 continue
-
-    #             item_str = str(item).lower()
-    #             timestamp_str = timestamp_lookup.get(item_str, "N/A")  
-
-    #             # Convert quantity & price safely for calculations
-    #             quantity = float(quantity) if isinstance(quantity, (int, float, str)) and str(quantity).replace(".", "").isdigit() else 0
-    #             price = float(price) if isinstance(price, (int, float, str)) and str(price).replace(".", "").isdigit() else 0
-
-    #             # Search by item or timestamp
-    #             if query in item_str or query in timestamp_str or not searched:
-    #                 inventoryTree.insert("", "end", values=(item, quantity, price, timestamp_str))
-    #                 total += quantity * price  # Update total regardless of search type
-
-    #         except (ValueError, TypeError, IndexError) as e:
-    #             print("Error processing row:", e)
-    #             continue
-
-    #     # Ensure total updates correctly AFTER loopingIN
-    #     print("Final Total:", total)  # Debug check
-    #     total_var.set(str(round(total, 2)) if searched else "0.00")  
-
-    # label = tk.Label(tab2, text="Search", bg="gray10", font="Times 11", fg="white")
-    # label.grid(row=8, column=0, pady=10, sticky="w")
-    # entry = tk.Entry(tab2, font="Times 11", justify="left")
-    # entry.grid(row=8, column=1, pady=5, sticky="we")
-    # entry.bind("<KeyRelease>", search)
-    # total_var = tk.StringVar()
-    # tk.Label(tab2, text="Total of the Selected item: ", bg="gray10", font="Calibri 11", fg="white").grid(row=8, column=2, sticky="w", padx =5)
-    # total_item = tk.Entry(tab2, font = "Times 11", justify = "left", textvariable=total_var, state = "readonly").grid(row = 8, column = 3, sticky = "we")
-    # label1 = tk.Label(tab2, text="                    ", bg="gray10", font="Times 11", fg="white")
-    # label1.grid(row=8, column=0, pady=10, sticky="w")
-    # tab2.grid_columnconfigure(1, weight=1)  
-    # view_data()
 
     
 
 
-    # def update_total():
-    #     def deduct_quantity():
-    #         selected = inventoryTree.selection()
-    #         if selected:
-    #             values = inventoryTree.item(selected[0], "values")
-    #             item_name = values[0]
-    #             current_quantity = values[1]
 
-    #             try:
-    #                 current_quantity = int(current_quantity)
-    #                 deduction = int(spinbox_deduction.get())
-    #                 if deduction > current_quantity:
-    #                     messagebox.showerror("Error", "Deduction exceeds current quantity.")
-    #                     return
-
-    #                 new_quantity = current_quantity - deduction
-    #                 inventory_ws[int(selected[0])][1].value = new_quantity  # Update quantity in Excel
-    #                 wb.save(EXCEL_FILE)
-    #                 inventoryTree.item(selected[0], values=(item_name, new_quantity, values[2]))  # Update Treeview
-    #                 update_total()  # Update total after deduction
-    #                 messagebox.showinfo("Success", f"Deducted {deduction} from {item_name}.")
-                    
-    #                 # Log action to history and inbox
-    #                 log_action("Deduct", item_name, deduction, values[2])
-    #                 log_action_to_inbox("Deduct", item_name, deduction, values[2])
-    #             except ValueError:
-    #                 messagebox.showerror("Error", "Invalid quantity or deduction value.")
-    #         else:
-    #             messagebox.showwarning("Warning", "No item selected.")
-
-    #     tk.Label(tab2, text="Deduct Quantity", bg="gray10", font="Calibri 11", fg="white").grid(row=4, column=0, sticky="w")
-    #     spinbox_deduction = tk.Spinbox(tab2, from_=0, to=1000, increment=1, font="Times 11", justify="left")
-    #     spinbox_deduction.grid(row=4, column=1, sticky="we")
-    #     tk.Button(tab2, text="DEDUCT", command=deduct_quantity, bg="turquoise4", fg="white", relief="groove", font="Arial 10").grid(row=5, column=3, pady=5, sticky="we")
-    #     total = 0
-    #     for row_index, row in enumerate(inventory_ws.iter_rows(min_row=2, values_only=True), start=2):
-    #         if row[1] is not None and row[2] is not None:  
-    #             try:
-    #                 quantity = float(row[1])
-    #                 price = float(row[2])
-    #                 total += quantity * price
-    #             except ValueError:
-    #                 continue
        
 
-    #     entry_quantity = tk.Entry(tab2, font="Times 11", justify="left", state="readonly")
-    #     entry_quantity.grid(row=9, column=2, sticky="we")
-
-
-        
-        
-    #     wb.save(EXCEL_FILE)
-
-    
-    #     inventoryTree.delete(*inventoryTree.get_children())
-    #     for row_index, row in enumerate(inventory_ws.iter_rows(min_row=2, values_only=True), start=2):
-    #         inventoryTree.insert("", "end", values=row, iid=str(row_index))
-
-    
-    #     view_data()
-
+   
       
 
     tk.Label(tab3, text="History", font=("Arial", 32, "bold"), bg="gray10", fg="white").grid(row=0, column=0, padx=5, pady=5, sticky="w")
@@ -939,7 +796,7 @@ def inventoryWindow():
     tab3.grid_columnconfigure(0, weight=1)
     tab3.grid_rowconfigure(1, weight=1)
 
-    # Create a new worksheet for history if it doesn't exist
+  
     if "History" not in wb.sheetnames:
         history_ws = wb.create_sheet("History")
         history_ws.append(["Action", "Item", "Quantity", "Price", "Timestamp"])
@@ -1013,7 +870,7 @@ def inventoryWindow():
     for col in ("Sender", "Message", "Timestamp"):
         inbox_tree.heading(col, text=col)
 
-    # Create a new worksheet for Inbox if it doesn't exist
+   
     if "Inbox" not in wb.sheetnames:
         inbox_ws = wb.create_sheet("Inbox")
         inbox_ws.append(["Sender", "Message", "Timestamp"])
@@ -1021,11 +878,10 @@ def inventoryWindow():
     else:
         inbox_ws = wb["Inbox"]
 
-    # Function to display messages in the inbox treeview
+  
     def display_inbox_message(sender, message, timestamp):
         inbox_tree.insert("", "end", values=(sender, message, timestamp))
 
-    # Load initial inbox data
     def load_inbox_data():
         inbox_tree.delete(*inbox_tree.get_children())
         for row in inbox_ws.iter_rows(min_row=2, values_only=True):
@@ -1036,7 +892,6 @@ def inventoryWindow():
     tab4.grid_columnconfigure(0, weight=1)
     tab4.grid_rowconfigure(1, weight=1)
 
-    # Function to log messages to the Inbox worksheet
     def log_inbox_message(sender, message):
         global current_user
         sender = current_user if current_user else "System"
@@ -1045,12 +900,12 @@ def inventoryWindow():
         wb.save(EXCEL_FILE)
         display_inbox_message(sender, message, timestamp)
 
-    # Automatically log messages to Inbox based on history actions
+   
     def log_action_to_inbox(action, item, quantity, price):
         message = f"{action} performed on item '{item}' with quantity '{quantity}' and price '{price}'."
         log_inbox_message("System", message)
 
-    # Update the history logging functions to also log to the Inbox
+ 
     def add_item_with_logging():
         item, quantity, price = entry_item.get(), entry_quantity.get(), entry_price.get()
         add_item()  # Call the original add_item function
@@ -1076,7 +931,7 @@ def inventoryWindow():
                 #log_action("Update", new_values[0], new_values[1], new_values[2])
                 #log_action_to_inbox("Update", new_values[0], new_values[1], new_values[2])
 
-    # Automatically update the Inbox when a new entry is added to the History worksheet
+
     def sync_inbox_with_history():
         history_rows = list(history_ws.iter_rows(min_row=2, values_only=True))
         inbox_rows = list(inbox_ws.iter_rows(min_row=2, values_only=True))
@@ -1086,18 +941,17 @@ def inventoryWindow():
             action, item, quantity, price, timestamp = row
             log_action_to_inbox(action, item, quantity, price)
 
-    # Call sync function whenever the history is updated
+
     sync_inbox_with_history()
 
-    # Search functionality for the Inbox
+
     def search_inbox(event=None):
         query = inbox_entry.get().strip().lower()
         
-        # Prevent accidental searches on the placeholder text
+     
         if query == "search" or query == "":
             return
 
-        # Ensure the treeview is cleared before inserting new results
         inbox_tree.delete(*inbox_tree.get_children())
 
         try:
@@ -1109,7 +963,6 @@ def inventoryWindow():
         except Exception as e:
             print(f"Error searching inbox: {e}")  # Debugging output
 
-    # Ensure Entry setup doesn't interfere with searches
    
 
     
